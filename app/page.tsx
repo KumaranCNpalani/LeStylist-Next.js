@@ -5,21 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Star, Clock, MapPin, Phone, Mail, Award, Users, Sparkles, Scissors, Heart } from "lucide-react"
 import BrandName from "@/components/brand-name"
 import OfferBanner from "@/components/OfferBanner"
+import { query } from "@/lib/db"
 
 // Fetch home content from database
 async function getHomeContent() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/content/home`, {
-      cache: 'no-store' // Ensure fresh data
-    })
-    if (response.ok) {
-      const data = await response.json()
-      return data.content || []
-    }
+    const content = await query(
+      `SELECT * FROM content_sections WHERE page = 'home' ORDER BY display_order`
+    ) as any[]
+    return content || []
   } catch (error) {
     console.error('Failed to fetch home content:', error)
+    return []
   }
-  return []
 }
 
 export default async function Home() {
